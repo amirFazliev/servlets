@@ -6,9 +6,12 @@ import ru.netology.repository.PostRepository;
 
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class PostService {
   private final PostRepository repository;
+
+  private final AtomicLong numberForSave = new AtomicLong(0);
 
   public PostService(PostRepository repository) {
     this.repository = repository;
@@ -27,6 +30,7 @@ public class PostService {
       System.out.println("Одинаковые модели Post (id=" +post.getId() + ", content=" + post.getContent() + ") - ошибка - не сохранено");
       return null;
     }
+    post.setId(numberForSave.incrementAndGet());
     return repository.save(post);
   }
 
@@ -47,9 +51,6 @@ public class PostService {
       } else {
         if (value.getId()!=post.getId() && (value.getContent().equals(post.getContent()))) {
           return true;
-        } else if (value.getId()==post.getId() && (!value.getContent().equals(post.getContent()))){
-          post.setId(Math.abs(new Random().nextLong()));
-          return false;
         }
       }
     }
